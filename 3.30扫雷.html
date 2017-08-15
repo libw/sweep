@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>扫雷</title>
+</head>
+<style>
+    section{
+        width: 498px;height: 498px;
+        position: absolute;left: 0;
+        right: 0;top: 0;
+        bottom: 0;margin: auto;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        background-color: #cae4e3;
+    }
+    .block{
+        width: 49px;height: 49px;
+        border-top: 1px solid #000;
+        border-left: 1px solid #000;
+        float: left;
+    }
+    
+    .show{
+        background-image: url("timg.jpg");
+        background-size: contain;
+    }
+    .num{
+        text-align: center;
+        line-height: 50px;
+        background-color: #fff;
+    }
+    .flag{
+        background-image: url("flag(1).jpg");
+        background-size: cover;
+    }
+    .flagnum{
+        width: 100px;height: 100px;
+        border: 1px solid #000;
+        text-align: center;
+        line-height: 100px;
+        font-size: 30px;
+    }
+</style>
+<script src="jquery.js"></script>
+<script>
+    $(function () {
+        do {
+            $("section").empty();
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 10; j++) {
+                    var lei = Math.random() > 0.9;
+
+                    $("<div></div>").addClass(
+                            function () {
+                                if (lei) {
+                                    return "block lei";
+                                } else {
+                                    return "block";
+                                }
+                            }).attr("id", i + "-" + j)
+                            .data("pos", {x: i, y: j})
+                            .mousedown(mousedownHandler)
+                            .appendTo("section");
+                }
+            }
+        }while ($(".lei").length!=10);
+
+        function mousedownHandler(e){
+            if(e.which==1){
+                leftclick.call(this);
+            }else if(e.which==3){
+//                alert(1);
+                rightclick.call(this);
+            }
+        }
+        function leftclick() {
+            if($(this).hasClass("lei")){
+                $(".lei").addClass("show");
+                alert("YOU LOST")
+
+            }else if($(this).hasClass("flag")){
+                return
+            } else {
+                var pos=$(this).data("pos");
+                var n=0;
+                for(var i=pos.x-1;i<=pos.x+1;i++){
+                    for(var j=pos.y-1;j<=pos.y+1;j++){
+                        if($("#"+i+"-"+j).hasClass("lei")){
+                            n++
+                        }
+                    }
+                }
+                $(this).text(n).addClass("num");
+                if(n==0){
+                    for(var i=pos.x-1;i<=pos.x+1;i++){
+                        for(var j=pos.y-1;j<=pos.y+1;j++){
+
+                            if($("#"+i+"-"+j).length!=0){
+                                if(!$("#"+i+"-"+j).data("clicked")){
+                                    $("#"+i+"-"+j).data("clicked",true);
+                                    leftclick.call($("#"+i+"-"+j))
+                                }
+
+
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+            var n=10;
+            function rightclick() {
+                if($(this).hasClass("num")){
+                    return
+                }
+                if(!$(this).hasClass("flag")){
+                    $(this).addClass("flag");
+                    n--;
+                    $(".flagnum").html(n);
+                    if(n==0){
+                        if($(".lei").filter(".flag").length==10){
+
+                            $(".block").not(".lei").addClass("num");
+
+                            alert("YOU WIN")
+                        }
+                    }
+                }else {
+                    $(this).removeClass("flag");
+                    n++;
+                    $(".flagnum").html(n);
+                }
+
+            }
+
+
+        $(document).on("contextmenu",function (e) {
+            e.preventDefault();
+        });
+
+    })
+
+</script>
+<body>
+    <section>
+
+    </section>
+    <div class="flagnum">
+        10
+    </div>
+</body>
+</html>
